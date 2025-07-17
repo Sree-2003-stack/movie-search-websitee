@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Search App</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .search-container {
+      margin-bottom: 30px;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      border-radius: 5px;
+      border: none;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #e50914;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .movies {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .movie {
+      background-color: #1f1f1f;
+      border-radius: 10px;
+      padding: 10px;
+      width: 200px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+    }
+
+    .movie img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .movie h3 {
+      font-size: 16px;
+      margin: 10px 0 5px;
+    }
+
+    .movie p {
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    .no-results {
+      margin-top: 20px;
+      font-style: italic;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎬 Movie Search App</h1>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search for a movie..." />
+    <button onclick="searchMovies()">Search</button>
+  </div>
+
+  <div class="movies" id="moviesContainer"></div>
+  <div class="no-results" id="noResults"></div>
+
+  <script>
+    const API_KEY = "206af0b1";
+
+    async function searchMovies() {
+      const query = document.getElementById('searchInput').value.trim();
+      const moviesContainer = document.getElementById('moviesContainer');
+      const noResults = document.getElementById('noResults');
+      
+      moviesContainer.innerHTML = '';
+      noResults.textContent = '';
+
+      if (!query) return;
+
+      const res = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${API_KEY}`);
+      const data = await res.json();
+
+      if (data.Response === "True") {
+        data.Search.forEach(movie => {
+          const movieEl = document.createElement('div');
+          movieEl.className = 'movie';
+          movieEl.innerHTML = `
+            <img src="${movie.Poster !== "N/A" ? movie.Poster : 'https://via.placeholder.com/200x300?text=No+Image'}" alt="${movie.Title}" />
+            <h3>${movie.Title}</h3>
+            <p>${movie.Year}</p>
+          `;
+          moviesContainer.appendChild(movieEl);
+        });
+      } else {
+        noResults.textContent = "No movies found. Try another title.";
+      }
+    }
+  </script>
+</body>
+</html>
